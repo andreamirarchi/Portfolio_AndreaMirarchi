@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portfolio Cards Viewer</title>
 
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 
   <style>
     * { box-sizing: border-box; }
@@ -17,6 +19,7 @@
       padding: 10px;
     }
 
+
     .container {
       max-width: 1100px;
       margin: auto;
@@ -25,12 +28,14 @@
       gap: 14px;
     }
 
+
     .card {
       background: #161b22;
       border: 1px solid #30363d;
       border-radius: 12px;
       overflow: hidden;
     }
+
 
     .card-header {
       display: flex;
@@ -40,15 +45,18 @@
       background: #1f242c;
     }
 
+
     .title {
       font-weight: bold;
     }
+
 
     .actions {
       display: flex;
       gap: 10px;
       align-items: center;
     }
+
 
     .github-btn {
       background: #2f81f7;
@@ -61,12 +69,14 @@
       cursor: pointer;
     }
 
+
     .repo-link {
       font-size: 12px;
       color: #58a6ff;
       text-decoration: underline;
       word-break: break-all;
     }
+
 
     .viewer {
       padding: 10px;
@@ -75,11 +85,13 @@
       overflow-y: auto;
     }
 
+
     canvas {
       display: block;
       margin: 10px auto;
       background: white;
     }
+
 
     iframe {
       width: 100%;
@@ -90,13 +102,18 @@
 </head>
 <body>
 
+
 <div class="container" id="app"></div>
+
 
 <script>
 
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
+
 const state = { items: [] };
+
 
 function seed() {
   state.items = [
@@ -111,7 +128,7 @@ function seed() {
       id: 2,
       title: "SitoAnnunci",
       url: "https://github.com/vincenzosacco/SitoAnnunci",
-      file: "docs/sample.pdf",
+      file: "pdf/we-bay.pdf",
       type: "pdf"
     },
     {
@@ -120,23 +137,35 @@ function seed() {
       url: "https://github.com/domenicosantagada/Progetto_School_Manager_INGSW_2025",
       file: "docs/sample.pdf",
       type: "pdf"
+    },
+    {
+      id: 4,
+      title: "Auditory Debugger",
+      url: "https://github.com/andreamirarchi/Portfolio_AndreaMirarchi",
+      file: "docs/sample.pdf",
+      type: "pdf"
     }
   ];
 }
+
 
 function createCard(repo) {
   const card = document.createElement("div");
   card.className = "card";
 
+
   const header = document.createElement("div");
   header.className = "card-header";
+
 
   const title = document.createElement("div");
   title.className = "title";
   title.textContent = repo.title;
 
+
   const actions = document.createElement("div");
   actions.className = "actions";
+
 
   const github = document.createElement("a");
   github.className = "github-btn";
@@ -144,47 +173,60 @@ function createCard(repo) {
   github.target = "_blank";
   github.textContent = "GitHub";
 
+
   const link = document.createElement("a");
   link.className = "repo-link";
   link.href = repo.url;
   link.target = "_blank";
   link.textContent = repo.url; // 🔥 link visibile come testo
 
+
   actions.appendChild(github);
   actions.appendChild(link);
+
 
   header.appendChild(title);
   header.appendChild(actions);
 
+
   const viewer = document.createElement("div");
   viewer.className = "viewer";
+
 
   card.appendChild(header);
   card.appendChild(viewer);
 
+
   loadViewer(repo, viewer);
+
 
   return card;
 }
 
+
 async function loadViewer(repo, container) {
   container.innerHTML = "Caricamento...";
+
 
   try {
     if (repo.type === "pdf") {
       const pdf = await pdfjsLib.getDocument(repo.file).promise;
       container.innerHTML = "";
 
+
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const viewport = page.getViewport({ scale: 1.2 });
+
 
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         canvas.width = viewport.width;
         canvas.height = viewport.height;
 
+
         container.appendChild(canvas);
+
 
         await page.render({ canvasContext: ctx, viewport }).promise;
       }
@@ -196,16 +238,20 @@ async function loadViewer(repo, container) {
   }
 }
 
+
 function render() {
   const app = document.getElementById("app");
   app.innerHTML = "";
   state.items.forEach(r => app.appendChild(createCard(r)));
 }
 
+
 seed();
 render();
 
+
 </script>
+
 
 </body>
 </html>
