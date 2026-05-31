@@ -1,257 +1,331 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Cards Viewer</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Portfolio Viewer</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+* { box-sizing: border-box; }
 
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 20px;
+}
 
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #e6edf3;
-      padding: 10px;
-    }
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
 
+/* CARD FISSA */
+.card {
+  width: 620px;
+  height: 420px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+.card-header {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  background: #1f242c;
+}
 
+.title { font-weight: bold; }
 
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      overflow: hidden;
-    }
+.github-btn {
+  background: #2f81f7;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 12px;
+}
 
+/* VIEWER SEMPRE UGUALE */
+.viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      background: #1f242c;
-    }
+/* SPAZIO FISSO MEDIA */
+.media-box {
+  width: 100%;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
+/* MEDIA NON CAMBIA LAYOUT */
+canvas, img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background: white;
+  border-radius: 6px;
+}
 
-    .title {
-      font-weight: bold;
-    }
+canvas {
+  display: block;
+}
 
+/* CONTROLLI SEMPRE UGUALI */
+.controls {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+button {
+  background: #2f81f7;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
+button:disabled { opacity: 0.4; }
 
-    .github-btn {
-      background: #2f81f7;
-      color: white;
-      border: none;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-
-    .repo-link {
-      font-size: 12px;
-      color: #58a6ff;
-      text-decoration: underline;
-      word-break: break-all;
-    }
-
-
-    .viewer {
-      padding: 10px;
-      background: #0d1117;
-      max-height: 600px;
-      overflow-y: auto;
-    }
-
-
-    canvas {
-      display: block;
-      margin: 10px auto;
-      background: white;
-    }
-
-
-    iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
-    }
-  </style>
+.page {
+  font-size: 12px;
+  color: #aaa;
+}
+</style>
 </head>
-<body>
 
+<body>
 
 <div class="container" id="app"></div>
 
-
 <script>
 
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
-
-const state = { items: [] };
-
-
-function seed() {
-  state.items = [
+/* DATA */
+const state = {
+  items: [
     {
-      id: 1,
+      title: "e-Borrow",
+      url: "https://github.com/andreamirarchi/e-Borrow",
+      type: "images",
+      images: [
+        "images/eBorrow/1.png",
+        "images/eBorrow/2.png",
+      ]
+    },
+    {
       title: "E20Master",
       url: "https://github.com/Piero23/E20Master",
-      file: "docs/sample.pdf",
-      type: "pdf"
+      type: "images",
+      images: [
+        "images/e20/E20_app1.png",
+        "images/e20/E20_app2.png",
+        "images/e20/E20_app3.jpg",
+        "images/e20/E20_app4.jpg"
+      ]
     },
     {
-      id: 2,
-      title: "SitoAnnunci",
-      url: "https://github.com/vincenzosacco/SitoAnnunci",
-      file: "pdf/we-bay.pptx",
-      type: "pptx"
-    },
-    {
-      id: 3,
-      title: "School Manager 2025",
+      title: "School Manager",
       url: "https://github.com/domenicosantagada/Progetto_School_Manager_INGSW_2025",
-      file: "docs/sample.pdf",
-      type: "pdf"
+      type: "images",
+      images: [
+        "images/schoolmanager/1.png",
+        "images/schoolmanager/2.png",
+        "images/schoolmanager/3.png",
+        "images/schoolmanager/4.png"
+      ]
     },
     {
-      id: 4,
+      title: "Sito Annunci",
+      url: "https://github.com/vincenzosacco/SitoAnnunci",
+      type: "pdf",
+      file: "pdf/we-bay.pdf"
+    },
+    {
       title: "Auditory Debugger",
-      url: "https://github.com/andreamirarchi/Portfolio_AndreaMirarchi",
-      file: "docs/sample.pdf",
-      type: "pdf"
+      url: "https://github.com/andreamirarchi/auditory_debugger",
+      type: "pdf",
+      file: "pdf/wypcsl.pdf"
     }
-  ];
-}
+  ]
+};
 
-
+/* CARD */
 function createCard(repo) {
+
   const card = document.createElement("div");
   card.className = "card";
 
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="title">${repo.title}</div>
+      <a class="github-btn" href="${repo.url}" target="_blank">GitHub Link</a>
+    </div>
 
-  const header = document.createElement("div");
-  header.className = "card-header";
+    <div class="viewer">
+      <div class="media-box"></div>
+      <div class="controls"></div>
+    </div>
+  `;
 
-
-  const title = document.createElement("div");
-  title.className = "title";
-  title.textContent = repo.title;
-
-
-  const actions = document.createElement("div");
-  actions.className = "actions";
-
-
-  const github = document.createElement("a");
-  github.className = "github-btn";
-  github.href = repo.url;
-  github.target = "_blank";
-  github.textContent = "GitHub";
-
-
-  const link = document.createElement("a");
-  link.className = "repo-link";
-  link.href = repo.url;
-  link.target = "_blank";
-  link.textContent = repo.url; // 🔥 link visibile come testo
-
-
-  actions.appendChild(github);
-  actions.appendChild(link);
-
-
-  header.appendChild(title);
-  header.appendChild(actions);
-
-
-  const viewer = document.createElement("div");
-  viewer.className = "viewer";
-
-
-  card.appendChild(header);
-  card.appendChild(viewer);
-
-
-  loadViewer(repo, viewer);
-
+  loadViewer(repo, card.querySelector(".media-box"), card.querySelector(".controls"));
 
   return card;
 }
 
+/* VIEWER */
+async function loadViewer(repo, box, controls) {
 
-async function loadViewer(repo, container) {
-  container.innerHTML = "Caricamento...";
+  controls.innerHTML = "";
+  box.innerHTML = "";
 
+  /* ================= IMAGES ================= */
+  if (repo.type === "images") {
 
-  try {
-    if (repo.type === "pdf") {
-      const pdf = await pdfjsLib.getDocument(repo.file).promise;
-      container.innerHTML = "";
+    let i = 0;
 
+    const img = document.createElement("img");
+    box.appendChild(img);
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 1.2 });
+    const prev = document.createElement("button");
+    const next = document.createElement("button");
+    const label = document.createElement("div");
 
+    prev.textContent = "←";
+    next.textContent = "→";
 
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+    controls.appendChild(prev);
+    controls.appendChild(label);
+    controls.appendChild(next);
 
-
-        container.appendChild(canvas);
-
-
-        await page.render({ canvasContext: ctx, viewport }).promise;
-      }
-    } else {
-      container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(location.origin + '/' + repo.file)}"></iframe>`;
+    function render(n) {
+      img.src = repo.images[n];
+      label.textContent = `${n + 1} / ${repo.images.length}`;
+      prev.disabled = n === 0;
+      next.disabled = n === repo.images.length - 1;
     }
-  } catch (e) {
-    container.innerHTML = "Errore caricamento file";
+
+    prev.onclick = () => render(--i);
+    next.onclick = () => render(++i);
+
+    render(i);
+  }
+
+  /* ================= PDF ================= */
+  else if (repo.type === "pdf") {
+
+    const pdf = await pdfjsLib.getDocument(repo.file).promise;
+
+    let page = 1;
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    box.appendChild(canvas);
+
+    const prev = document.createElement("button");
+    const next = document.createElement("button");
+    const label = document.createElement("div");
+
+    prev.textContent = "←";
+    next.textContent = "→";
+
+    controls.appendChild(prev);
+    controls.appendChild(label);
+    controls.appendChild(next);
+
+    async function renderPage(n) {
+      const p = await pdf.getPage(n);
+
+      const dpr = window.devicePixelRatio || 1;
+      const baseViewport = p.getViewport({ scale: 1 });
+
+      const targetCssWidth = Math.min(box.clientWidth || 560, 560);
+      const scale = (targetCssWidth * dpr) / baseViewport.width;
+
+      const viewport = p.getViewport({ scale });
+
+      const temp = document.createElement("canvas");
+      const tctx = temp.getContext("2d");
+
+      temp.width = viewport.width;
+      temp.height = viewport.height;
+
+      await p.render({ canvasContext: tctx, viewport }).promise;
+
+      let sx = 0;
+      let sy = 0;
+      let sw = temp.width;
+      let sh = temp.height;
+
+      if (repo.file.includes("we-bay") || repo.file.includes("wypcsl")) {
+        const ratio = 16 / 9;
+
+        if (sw / sh > ratio) {
+          sw = Math.round(sh * ratio);
+          sx = Math.round((temp.width - sw) / 2);
+        } else {
+          sh = Math.round(sw / ratio);
+          sy = Math.round((temp.height - sh) / 2);
+        }
+      }
+
+      canvas.width = sw;
+      canvas.height = sh;
+      canvas.style.width = `${sw / dpr}px`;
+      canvas.style.height = `${sh / dpr}px`;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, sw, sh);
+      ctx.drawImage(temp, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      label.textContent = `${n} / ${pdf.numPages}`;
+
+      prev.disabled = n <= 1;
+      next.disabled = n >= pdf.numPages;
+    }
+
+    prev.onclick = () => renderPage(--page);
+    next.onclick = () => renderPage(++page);
+
+    renderPage(page);
   }
 }
 
-
+/* RENDER */
 function render() {
   const app = document.getElementById("app");
-  app.innerHTML = "";
-  state.items.forEach(r => app.appendChild(createCard(r)));
+  state.items.forEach(p => app.appendChild(createCard(p)));
 }
 
-
-seed();
 render();
 
-
 </script>
-
 
 </body>
 </html>
