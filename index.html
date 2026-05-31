@@ -25,7 +25,6 @@ body {
   align-items: center;
 }
 
-/* CARD FISSA */
 .card {
   width: 620px;
   height: 420px;
@@ -37,6 +36,7 @@ body {
   flex-direction: column;
 }
 
+/* HEADER */
 .card-header {
   height: 50px;
   display: flex;
@@ -46,7 +46,26 @@ body {
   background: #1f242c;
 }
 
-.title { font-weight: bold; }
+.title {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #2f81f7;
+  color: white;
+}
 
 .github-btn {
   background: #2f81f7;
@@ -57,7 +76,7 @@ body {
   font-size: 12px;
 }
 
-/* VIEWER SEMPRE UGUALE */
+/* VIEWER UGUALE */
 .viewer {
   flex: 1;
   display: flex;
@@ -67,7 +86,6 @@ body {
   overflow: hidden;
 }
 
-/* SPAZIO FISSO MEDIA */
 .media-box {
   width: 100%;
   height: 320px;
@@ -77,7 +95,6 @@ body {
   position: relative;
 }
 
-/* MEDIA NON CAMBIA LAYOUT */
 canvas, img {
   max-width: 100%;
   max-height: 100%;
@@ -86,11 +103,7 @@ canvas, img {
   border-radius: 6px;
 }
 
-canvas {
-  display: block;
-}
-
-/* CONTROLLI SEMPRE UGUALI */
+/* CONTROLLI UGUALI */
 .controls {
   height: 40px;
   display: flex;
@@ -111,9 +124,11 @@ button {
 
 button:disabled { opacity: 0.4; }
 
-.page {
-  font-size: 12px;
-  color: #aaa;
+/* 📱 SOLO RESPONSIVE SEMPLICE (non cambia layout interno) */
+@media (max-width: 650px) {
+  .card {
+    width: 95vw;
+  }
 }
 </style>
 </head>
@@ -134,15 +149,14 @@ const state = {
       title: "e-Borrow",
       url: "https://github.com/andreamirarchi/e-Borrow",
       type: "images",
-      images: [
-        "images/eBorrow/1.png",
-        "images/eBorrow/2.png",
-      ]
+      languages: ["Python", "Flask"],
+      images: ["images/eBorrow/1.png","images/eBorrow/2.png"]
     },
     {
       title: "E20Master",
       url: "https://github.com/Piero23/E20Master",
       type: "images",
+      languages: ["Java", "Spring", "Kotlin", "TypeScript", "Angular"],
       images: [
         "images/e20/E20_app1.png",
         "images/e20/E20_app2.png",
@@ -154,6 +168,7 @@ const state = {
       title: "School Manager",
       url: "https://github.com/domenicosantagada/Progetto_School_Manager_INGSW_2025",
       type: "images",
+      languages: ["Java"],
       images: [
         "images/schoolmanager/1.png",
         "images/schoolmanager/2.png",
@@ -165,12 +180,14 @@ const state = {
       title: "Sito Annunci",
       url: "https://github.com/vincenzosacco/SitoAnnunci",
       type: "pdf",
+      languages: ["TypeScript", "Angular", "Java", "Spring"],
       file: "pdf/we-bay.pdf"
     },
     {
       title: "Auditory Debugger",
       url: "https://github.com/andreamirarchi/auditory_debugger",
       type: "pdf",
+      languages: ["Python"],
       file: "pdf/wypcsl.pdf"
     }
   ]
@@ -182,9 +199,16 @@ function createCard(repo) {
   const card = document.createElement("div");
   card.className = "card";
 
+  const badges = (repo.languages || [])
+    .map(l => `<span class="badge">${l}</span>`)
+    .join("");
+
   card.innerHTML = `
     <div class="card-header">
-      <div class="title">${repo.title}</div>
+      <div class="title">
+        ${repo.title}
+        <div class="badges">${badges}</div>
+      </div>
       <a class="github-btn" href="${repo.url}" target="_blank">GitHub Link</a>
     </div>
 
@@ -199,13 +223,13 @@ function createCard(repo) {
   return card;
 }
 
-/* VIEWER */
+/* VIEWER (IDENTICO AL TUO ORIGINALE) */
 async function loadViewer(repo, box, controls) {
 
   controls.innerHTML = "";
   box.innerHTML = "";
 
-  /* ================= IMAGES ================= */
+  /* IMAGES */
   if (repo.type === "images") {
 
     let i = 0;
@@ -237,7 +261,7 @@ async function loadViewer(repo, box, controls) {
     render(i);
   }
 
-  /* ================= PDF ================= */
+  /* PDF */
   else if (repo.type === "pdf") {
 
     const pdf = await pdfjsLib.getDocument(repo.file).promise;
@@ -283,6 +307,7 @@ async function loadViewer(repo, box, controls) {
       let sw = temp.width;
       let sh = temp.height;
 
+      /* 🔥 RIPRISTINO LOGICA 16:9 */
       if (repo.file.includes("we-bay") || repo.file.includes("wypcsl")) {
         const ratio = 16 / 9;
 
@@ -297,6 +322,7 @@ async function loadViewer(repo, box, controls) {
 
       canvas.width = sw;
       canvas.height = sh;
+
       canvas.style.width = `${sw / dpr}px`;
       canvas.style.height = `${sh / dpr}px`;
 
